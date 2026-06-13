@@ -626,6 +626,59 @@ def inject_custom_css():
                 border-radius: 10px;
                 width: 100%;
             }
+            .app-header {
+                padding: 0.25rem 0 1rem 0;
+                margin-bottom: 0.25rem;
+                border-bottom: 1px solid #E2E8F0;
+            }
+            .app-title {
+                font-size: 1.55rem;
+                font-weight: 700;
+                color: #0F172A;
+                line-height: 1.25;
+                margin: 0 0 0.4rem 0;
+            }
+            .app-goal {
+                font-size: 0.95rem;
+                color: #475569;
+                line-height: 1.55;
+                margin: 0 0 0.75rem 0;
+                max-width: 52rem;
+            }
+            .app-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.45rem;
+            }
+            .meta-chip {
+                display: inline-block;
+                padding: 0.2rem 0.6rem;
+                border-radius: 999px;
+                font-size: 0.76rem;
+                font-weight: 600;
+                border: 1px solid #E2E8F0;
+                background: #F8FAFC;
+                color: #475569;
+            }
+            .meta-chip-company {
+                background: #FFFFFF;
+                color: #334155;
+            }
+            .meta-chip-warn {
+                background: #FFFBEB;
+                color: #B45309;
+                border-color: #FDE68A;
+            }
+            .meta-chip-live {
+                background: #F0FDF4;
+                color: #15803D;
+                border-color: #BBF7D0;
+            }
+            .meta-chip-demo {
+                background: #FFF7ED;
+                color: #C2410C;
+                border-color: #FED7AA;
+            }
         </style>
         """,
         unsafe_allow_html=True,
@@ -636,21 +689,37 @@ def render_header(company: Dict[str, Any], logo_path: Optional[Path], chunk_coun
     bot_name = company.get("bot_name", "Workshop Chatbot")
     bot_goal = company.get("bot_goal", "A simple chatbot template students can personalize.")
     company_name = company.get("company_name", "Student company")
-    status = "Demo mode" if demo_mode else "Live"
+    status_label = "Demo mode" if demo_mode else "Live"
+    status_class = "meta-chip-demo" if demo_mode else "meta-chip-live"
+    if chunk_count:
+        knowledge_label = f"{chunk_count} knowledge chunks"
+        knowledge_class = "meta-chip"
+    else:
+        knowledge_label = "No company data yet"
+        knowledge_class = "meta-chip-warn"
 
-    logo_col, info_col = st.columns([1, 10], vertical_alignment="center")
+    logo_col, info_col = st.columns([1, 11], vertical_alignment="center")
     with logo_col:
         if logo_path:
-            st.image(str(logo_path), width=56)
+            st.image(str(logo_path), width=52)
         else:
             st.markdown("##### 🤖")
 
     with info_col:
-        st.markdown(f"**{bot_name}**")
-        st.caption(f"{company_name} · {chunk_count} knowledge chunks · {status}")
-        st.caption(bot_goal)
-
-    st.divider()
+        st.markdown(
+            f"""
+            <div class="app-header">
+                <div class="app-title">{bot_name}</div>
+                <div class="app-goal">{bot_goal}</div>
+                <div class="app-meta">
+                    <span class="meta-chip meta-chip-company">{company_name}</span>
+                    <span class="meta-chip {knowledge_class}">{knowledge_label}</span>
+                    <span class="meta-chip {status_class}">{status_label}</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 MODEL_CHOICES = ["glm-5-1", "hypernova-60b"]
