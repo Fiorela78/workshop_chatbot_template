@@ -11,7 +11,7 @@ Supported formats:
 Recommended name:
 
 ```text
-logo.png
+logoimp.png
 ```
 
 The app automatically loads the first image it finds in this folder.
